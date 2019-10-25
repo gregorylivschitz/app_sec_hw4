@@ -18,5 +18,5 @@ class RegistrationForm(Form):
     #     validators.DataRequired(),
     #     validators.EqualTo('confirm', message='Passwords must match')
     # ])
-    password = PasswordField('New Password', validators=[validators.DataRequired()])
+    password = PasswordField('New Password', id="pword", validators=[validators.DataRequired()])
     # confirm = PasswordField('Repeat Password')
