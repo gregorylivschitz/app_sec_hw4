@@ -3,10 +3,10 @@
 <head>
 {% from "_formhelpers.html" import render_field %}
 <form method=post>
-  <dl>
+    <div id="success">
     {{ render_field(form.text) }}
-  </dl>
-  <p><input type=submit value=Register>
+    </div>
+  <p><input type=submit value=Submit>
 </form>
 </head>
 <body>

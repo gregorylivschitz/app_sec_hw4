@@ -7,8 +7,8 @@ class SpellCheckForm(Form):
 
 class LoginForm(Form):
     username = StringField('Username', id="uname", validators=[validators.Length(min=4, max=25), validators.DataRequired()])
-    phonenumber = StringField('Phone Number', id="pword", validators=[validators.DataRequired()])
-    password = PasswordField('New Password', id="2fa", validators= [validators.DataRequired()])
+    phonenumber = StringField('Phone Number', id="2fa", validators=[validators.DataRequired()])
+    password = PasswordField('New Password', id="pword", validators= [validators.DataRequired()])
 
 
 class RegistrationForm(Form):
