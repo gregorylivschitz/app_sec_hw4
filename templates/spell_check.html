@@ -3,6 +3,7 @@
 <head>
 {% from "_formhelpers.html" import render_field %}
 <form method=post>
+    {{ form.hidden_tag() }}
     <div id="success">
     {{ render_field(form.text) }}
     </div>
