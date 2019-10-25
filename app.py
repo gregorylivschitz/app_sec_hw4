@@ -38,9 +38,9 @@ def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         password = form.password.data
-        confirm_password = form.confirm.data
-        if password != confirm_password:
-            return '<div id="success">failure</div>'
+        # confirm_password = form.confirm.data
+        # if password != confirm_password:
+        #     return '<div id="success">failure</div>'
         bcrypt_hash = bcrypt.generate_password_hash(password=password)
         try:
             user = User(name=form.username.data, phone_number=form.phonenumber.data, password_hash=bcrypt_hash)
