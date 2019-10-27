@@ -6,7 +6,6 @@ from flask import Flask, redirect, request, flash, render_template
 from flask_login import LoginManager, login_user, login_required, logout_user
 from forms import RegistrationForm, LoginForm, SpellCheckForm
 import subprocess
-# db.init_app(app)
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
@@ -29,7 +28,7 @@ def load_user(user_id):
 
 @app.route('/')
 def hello_world():
-    return 'Hello World!'
+    return render_template("index.html")
 
 
 #https://flask.palletsprojects.com/en/1.0.x/patterns/wtforms/
@@ -99,8 +98,8 @@ def get_spell_check():
         with open("test_3.txt", 'w') as f:
             f.write(full_text)
         result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
-        words = result.stdout.splitlines()
-        misspelled = b','.join(words)
+        words = result.stdout.decode("utf-8").splitlines()
+        misspelled = ','.join(words)
         return render_template("spell_check_return.html", misspelled=misspelled, full_text=full_text)
     return render_template('spell_check.html', form=form)
 
