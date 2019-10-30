@@ -36,14 +36,12 @@ def hello_world():
 def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        print("in post registration")
         password = form.password.data
         # confirm_password = form.confirm.data
         # if password != confirm_password:
         #     return '<div id="success">failure</div>'
         bcrypt_hash = bcrypt.generate_password_hash(password=password)
         try:
-            print("trying to add user {}".format(form.username.data))
             user = User(name=form.username.data, phone_number=form.phonenumber.data, password_hash=bcrypt_hash)
             db.session.add(user)
             db.session.commit()

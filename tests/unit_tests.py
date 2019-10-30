@@ -27,13 +27,19 @@ def test_empty_db(client):
 
 def test_register_form(client):
     rv = client.get('/register')
-    assert b'id=pword' in rv.data
+    assert b'id="pword"' in rv.data
 
 
 def test_login_form(client):
     rv = client.get('/login')
-    assert b'id=pword' in rv.data
+    print(rv)
+    assert b'id="pword"' in rv.data
 
 
-def test_login_success(client):
-    rv = client.post('/login')
+# def test_login_success(client):
+#     rv = client.post('/register', data=dict(
+#         uname="greg",
+#         pword="mypassword",
+#         fa="564-3843-2093"
+#     ))
+#     assert b'id="success"' in rv.data
