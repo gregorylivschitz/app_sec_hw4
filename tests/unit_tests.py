@@ -21,6 +21,19 @@ def client():
 
 
 def test_empty_db(client):
-    """Start with a blank database."""
     rv = client.get('/')
     assert b'App Sec' in rv.data
+
+
+def test_register_form(client):
+    rv = client.get('/register')
+    assert b'id=pword' in rv.data
+
+
+def test_login_form(client):
+    rv = client.get('/login')
+    assert b'id=pword' in rv.data
+
+
+def test_login_success(client):
+    rv = client.post('/login')
