@@ -18,6 +18,8 @@ from models import User
 app.config['SECRET_KEY'] = 'FAKE KEY FOR CI/CD'
 db.create_all()
 bcrypt = Bcrypt(app)
+# unfortunately this doesn't work when running unit tests with python app.py, need to run it as flask run
+# so I'm commenting out so travis would work
 # Talisman(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
