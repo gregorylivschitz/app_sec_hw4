@@ -58,14 +58,24 @@ def test_login_failure(client, init_db):
     assert b"Incorrect" in rv.data
 
 
-# def test_login_success(client, init_bcrypt):
-#     bcrypt_hash = init_bcrypt("greg")
-#     user = User(username="greg", password_hash=bcrypt_hash, phone_number="333")
-#     init_db.session.add(user)
-#     init_db.session.commit()
-#     rv = client.post('/login', data=dict(
-#         username="greg",
-#         password="greg_p",
-#         phonenumber="333"
-#     ))
-#     assert b"Incorrect" in rv.data
+def test_login_success(client, init_db,init_bcrypt):
+    bcrypt_hash = init_bcrypt.generate_password_hash("greg_p")
+    user = User(name="greg", phone_number="333", password_hash=bcrypt_hash)
+    init_db.session.add(user)
+    init_db.session.commit()
+    rv = client.post('/login', data=dict(
+        username="greg",
+        password="greg_p",
+        phonenumber="333"
+    ))
+    assert b"Success" in rv.data
+
+
+def test_registration_success(client, init_db):
+    rv = client.post('/register', data=dict(
+        username="greg1",
+        password="greg_p1",
+        phonenumber="333"
+    ))
+    user = User.query.filter_by(name="greg1").first()
+    assert user.name == "greg1"

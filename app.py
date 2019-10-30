@@ -53,11 +53,8 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    print("trying to log in")
     form = LoginForm(request.form)
-    print(form.validate())
     if request.method == 'POST' and form.validate():
-        print("In the login")
         username = form.username.data
         password = form.password.data
         if validate_user(username, password):
