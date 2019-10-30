@@ -1,3 +1,5 @@
+import subprocess
+
 import flask
 import sqlalchemy
 from flask_bcrypt import Bcrypt
@@ -5,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, redirect, request, flash, render_template
 from flask_login import LoginManager, login_user, login_required, logout_user
 from forms import RegistrationForm, LoginForm, SpellCheckForm
-import subprocess
+from flask_talisman import Talisman
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
@@ -13,10 +15,10 @@ db = SQLAlchemy(app)
 
 from models import User
 
-
 app.config['SECRET_KEY'] = 'FAKE KEY FOR CI/CD'
 db.create_all()
 bcrypt = Bcrypt(app)
+# Talisman(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -37,9 +39,6 @@ def register():
     form = RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         password = form.password.data
-        # confirm_password = form.confirm.data
-        # if password != confirm_password:
-        #     return '<div id="success">failure</div>'
         bcrypt_hash = bcrypt.generate_password_hash(password=password)
         try:
             user = User(name=form.username.data, phone_number=form.phonenumber.data, password_hash=bcrypt_hash)
@@ -54,8 +53,11 @@ def register():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    print("trying to log in")
     form = LoginForm(request.form)
+    print(form.validate())
     if request.method == 'POST' and form.validate():
+        print("In the login")
         username = form.username.data
         password = form.password.data
         if validate_user(username, password):
@@ -63,11 +65,6 @@ def login():
             if user.phone_number != form.phonenumber.data:
                 return '<div id="result">Two-factor failure</div>'
             login_user(user)
-            # next = flask.request.args.get('next')
-            # # is_safe_url should check if the url is safe for redirects.
-            # # See http://flask.pocoo.org/snippets/62/ for an example.
-            # if not is_safe_url(next):
-            #     return flask.abort(400)
             return '<div id="result">Success</div>'
         return '<div id="result">Incorrect</div>'
     return render_template('login.html', form=form)
@@ -103,4 +100,4 @@ def get_spell_check():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

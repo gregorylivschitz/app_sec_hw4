@@ -7,4 +7,3 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(255), unique=True)
     phone_number = db.Column(db.String(255))
     password_hash = db.Column(db.String(255))
-    # active = db.Column(db.Boolean())
