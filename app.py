@@ -11,8 +11,8 @@ from forms import RegistrationForm, LoginForm, SpellCheckForm, QueryForm, Logger
 from flask_talisman import Talisman
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 
 from models import User, SpellCheck, LogLogs
@@ -25,6 +25,10 @@ bcrypt = Bcrypt(app)
 # Talisman(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
+# add admin user
+admin_user = User(name="admin", phone_number="12345678901", password_hash=b'$2b$12$0HVKc/rDTJOYXRaGdFBPeu.ZdEH0F3uMvUV/AEmoKLXDHUp7pQb8O')
+db.session.add(admin_user)
+db.session.commit()
 
 
 @login_manager.user_loader
@@ -99,10 +103,10 @@ def get_spell_check():
         full_text = form.text.data
         with open("test_3.txt", 'w') as f:
             f.write(full_text)
-        # result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
-        result = "boo hoo"
-        # words = result.stdout.decode("utf-8").splitlines()
-        words = ["omg", "omg2"]
+        result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
+        # result = "boo hoo"
+        words = result.stdout.decode("utf-8").splitlines()
+        # words = ["omg", "omg2"]
         misspelled = ','.join(words)
         user_id = current_user.id
         sp = SpellCheck(user_id=user_id, submit_text=full_text, result_text=result)
