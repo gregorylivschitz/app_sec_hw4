@@ -109,7 +109,7 @@ def get_spell_check():
         # words = ["omg", "omg2"]
         misspelled = ','.join(words)
         user_id = current_user.id
-        sp = SpellCheck(user_id=user_id, submit_text=full_text, result_text=result)
+        sp = SpellCheck(user_id=user_id, submit_text=full_text, result_text=misspelled)
         db.session.add(sp)
         db.session.commit()
         return render_template("spell_check_return.html", misspelled=misspelled, full_text=full_text)
