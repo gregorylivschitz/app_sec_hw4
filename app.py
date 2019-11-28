@@ -1,3 +1,4 @@
+import datetime
 import subprocess
 
 import flask
@@ -5,15 +6,16 @@ import sqlalchemy
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, redirect, request, flash, render_template
-from flask_login import LoginManager, login_user, login_required, logout_user
-from forms import RegistrationForm, LoginForm, SpellCheckForm
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from forms import RegistrationForm, LoginForm, SpellCheckForm, QueryForm, LoggerForm
 from flask_talisman import Talisman
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 
-from models import User
+from models import User, SpellCheck, LogLogs
 
 app.config['SECRET_KEY'] = 'FAKE KEY FOR CI/CD'
 db.create_all()
@@ -64,6 +66,9 @@ def login():
             if user.phone_number != form.phonenumber.data:
                 return '<div id="result">Two-factor failure</div>'
             login_user(user)
+            log_log = LogLogs(user_id=user.id, login_time=datetime.datetime.now())
+            db.session.add(log_log)
+            db.session.commit()
             return '<div id="result">Success</div>'
         return '<div id="result">Incorrect</div>'
     return render_template('login.html', form=form)
@@ -79,7 +84,10 @@ def validate_user(username, password):
 @app.route("/logout")
 @login_required
 def logout():
+    last_log = current_user.log_logs[-1]
     logout_user()
+    last_log.logout_time = datetime.datetime.now()
+    db.session.commit()
     return redirect("/")
 
 
@@ -91,11 +99,66 @@ def get_spell_check():
         full_text = form.text.data
         with open("test_3.txt", 'w') as f:
             f.write(full_text)
-        result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
-        words = result.stdout.decode("utf-8").splitlines()
+        # result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
+        result = "boo hoo"
+        # words = result.stdout.decode("utf-8").splitlines()
+        words = ["omg", "omg2"]
         misspelled = ','.join(words)
+        user_id = current_user.id
+        sp = SpellCheck(user_id=user_id, submit_text=full_text, result_text=result)
+        db.session.add(sp)
+        db.session.commit()
         return render_template("spell_check_return.html", misspelled=misspelled, full_text=full_text)
     return render_template('spell_check.html', form=form)
+
+
+@app.route('/your/webroot/history', methods=['GET', 'POST'])
+@login_required
+def get_history():
+    # usernames are unique so we don't have to worry here
+    if current_user.name == 'admin':
+        form = QueryForm(request.form)
+        if request.method == 'POST' and form.validate():
+            query_id = form.data['query_id']
+            # could this be an issue?
+            return redirect('/your/webroot/history/{}'.format(query_id))
+        return render_template("query_admin.html", form=form)
+    return render_template("query_history.html", query_spells=current_user.spell_check)
+
+
+@app.route('/your/webroot/history/<int:query_id>')
+@login_required
+def get_query(query_id):
+    if current_user.name == 'admin':
+        sp = SpellCheck.query.get(query_id)
+        return render_template("query_info.html", sp=sp)
+    for spell_check in current_user.spell_check:
+        if spell_check.id == query_id:
+            sp = SpellCheck.query.get(query_id)
+            return render_template("query_info.html", sp=sp)
+    return "DENIED", 401
+
+
+@app.route('/your/webroot/login_history', methods=['GET', 'POST'])
+@login_required
+def get_login_history():
+    if current_user.name == 'admin':
+        form = LoggerForm(request.form)
+        if request.method == 'POST' and form.validate():
+            user_id = form.data['user_id']
+            # could this be an issue?
+            return redirect('/admin/history/log/{}'.format(user_id))
+        return render_template("log_admin.html", form=form)
+    return "DENIED", 401
+
+
+@app.route('/admin/history/log/<int:user_id>')
+@login_required
+def get_logging(user_id):
+    if current_user.name == 'admin':
+        log_logs = User.query.get(user_id).log_logs
+        return render_template("log_history.html", log_logs=log_logs)
+    return "DENIED", 401
 
 
 if __name__ == '__main__':

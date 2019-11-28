@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+</head>
+<body>
+{% from "_formhelpers.html" import render_field %}
+<div id="query_full">
+    <div id="queryid">{{ sp.id }}</div>
+    <div id="username">{{ sp.user.name }}</div>
+    <div id="querytext">{{ sp.submit_text }}</div>
+    <div id="queryresults">{{ sp.result_text }}</div>
+</div>
+
+</body>
+</html>
