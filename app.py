@@ -116,7 +116,8 @@ def get_spell_check():
     return render_template('spell_check.html', form=form)
 
 
-@app.route('/your/webroot/history', methods=['GET', 'POST'])
+# @app.route('/your/webroot/history', methods=['GET', 'POST'])
+@app.route('/history', methods=['GET', 'POST'])
 @login_required
 def get_history():
     # usernames are unique so we don't have to worry here
@@ -130,7 +131,8 @@ def get_history():
     return render_template("query_history.html", query_spells=current_user.spell_check)
 
 
-@app.route('/your/webroot/history/<int:query_id>')
+# @app.route('/your/webroot/history/<int:query_id>')
+@app.route('/history', methods=['GET', 'POST'])
 @login_required
 def get_query(query_id):
     if current_user.name == 'admin':
@@ -140,10 +142,11 @@ def get_query(query_id):
         if spell_check.id == query_id:
             sp = SpellCheck.query.get(query_id)
             return render_template("query_info.html", sp=sp)
-    return "DENIED", 401
+    return "No query info found"
 
 
-@app.route('/your/webroot/login_history', methods=['GET', 'POST'])
+# @app.route('/your/webroot/login_history', methods=['GET', 'POST'])
+@app.route('/login_history', methods=['GET', 'POST'])
 @login_required
 def get_login_history():
     if current_user.name == 'admin':
