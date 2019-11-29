@@ -96,17 +96,17 @@ def logout():
 
 
 @app.route('/spell_check', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def get_spell_check():
     form = SpellCheckForm(request.form)
     if request.method == 'POST' and form.validate():
         full_text = form.text.data
         with open("test_3.txt", 'w') as f:
             f.write(full_text)
-        # result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
+        result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
         # result = "boo hoo"
-        # words = result.stdout.decode("utf-8").splitlines()
-        words = ["omg", "omg2"]
+        words = result.stdout.decode("utf-8").splitlines()
+        # words = ["omg", "omg2"]
         misspelled = ','.join(words)
         user_id = current_user.id
         sp = SpellCheck(user_id=user_id, submit_text=full_text, result_text=misspelled)
