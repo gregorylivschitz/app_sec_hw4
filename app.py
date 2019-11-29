@@ -103,10 +103,10 @@ def get_spell_check():
         full_text = form.text.data
         with open("test_3.txt", 'w') as f:
             f.write(full_text)
-        result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
+        # result = subprocess.run(['./spell_check', 'test_3.txt', 'wordlist.txt'], stdout=subprocess.PIPE)
         # result = "boo hoo"
-        words = result.stdout.decode("utf-8").splitlines()
-        # words = ["omg", "omg2"]
+        # words = result.stdout.decode("utf-8").splitlines()
+        words = ["omg", "omg2"]
         misspelled = ','.join(words)
         user_id = current_user.id
         sp = SpellCheck(user_id=user_id, submit_text=full_text, result_text=misspelled)
@@ -126,13 +126,13 @@ def get_history():
         if request.method == 'POST' and form.validate():
             query_id = form.data['query_id']
             # could this be an issue?
-            return redirect('/your/webroot/history/{}'.format(query_id))
+            return redirect('/history/query{}'.format(query_id))
         return render_template("query_admin.html", form=form)
     return render_template("query_history.html", query_spells=current_user.spell_check)
 
 
 # @app.route('/your/webroot/history/<int:query_id>')
-@app.route('/history', methods=['GET', 'POST'])
+@app.route('/history/query<int:query_id>', methods=['GET', 'POST'])
 @login_required
 def get_query(query_id):
     if current_user.name == 'admin':
