@@ -96,7 +96,7 @@ def logout():
 
 
 @app.route('/spell_check', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def get_spell_check():
     form = SpellCheckForm(request.form)
     if request.method == 'POST' and form.validate():
