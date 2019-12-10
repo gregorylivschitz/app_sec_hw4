@@ -6,7 +6,7 @@
 {% from "_formhelpers.html" import render_field %}
 <div id="numqueries">
     {% for query_spell in query_spells %}
-        <div id="query{{ query_spell.id }}"><a href="/your/webroot/history/{{ query_spell.id }}">{{ query_spell.id }}</a></div>
+        <div id="query{{ query_spell.id }}"><a href="/history/{{ query_spell.id }}">{{ query_spell.id }}</a></div>
     {% endfor %}
 </div>
 
