@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 db = SQLAlchemy(app)
 
-from models import User, SpellCheck, LogLogs
+from models import *
 
 app.config['SECRET_KEY'] = 'FAKE KEY FOR CI/CD'
 db.create_all()
