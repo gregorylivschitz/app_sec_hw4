@@ -1,4 +1,5 @@
 import datetime
+import os
 import subprocess
 
 import flask
@@ -16,8 +17,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 db = SQLAlchemy(app)
 
 from models import *
-
-app.config['SECRET_KEY'] = 'FAKE KEY FOR CI/CD'
+print(os.getenv("CSRF_TOKEN"))
+app.config['SECRET_KEY'] = os.getenv("CSRF_TOKEN")
 db.create_all()
 bcrypt = Bcrypt(app)
 # unfortunately this doesn't work when running unit tests with python app.py, need to run it as flask run
@@ -26,7 +27,9 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 # add admin user
-admin_user = User(name="admin", phone_number="12345678901", password_hash=b'$2b$12$0HVKc/rDTJOYXRaGdFBPeu.ZdEH0F3uMvUV/AEmoKLXDHUp7pQb8O')
+print(os.getenv("ADMIN_PASSWORD"))
+admin_bcrypt_hash = bcrypt.generate_password_hash(password=os.getenv("ADMIN_PASSWORD"))
+admin_user = User(name="admin", phone_number="12345678901", password_hash=admin_bcrypt_hash)
 db.session.add(admin_user)
 db.session.commit()
 
