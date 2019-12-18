@@ -17,7 +17,11 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite://'
 db = SQLAlchemy(app)
 
 from models import *
-app.config['SECRET_KEY'] = os.getenv("CSRF_TOKEN")
+
+admin_password = password=os.getenv("ADMIN_PASSWORD")
+admin_phonenumber = os.getenv("PHONE_NUMBER")
+csrf_token = os.getenv("CSRF_TOKEN")
+app.config['SECRET_KEY'] = csrf_token
 db.create_all()
 bcrypt = Bcrypt(app)
 # unfortunately this doesn't work when running unit tests with python app.py, need to run it as flask run
@@ -26,8 +30,9 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 # add admin user
-admin_bcrypt_hash = bcrypt.generate_password_hash(password=os.getenv("ADMIN_PASSWORD"))
-admin_user = User(name="admin", phone_number=os.getenv("PHONE_NUMBER"), password_hash=admin_bcrypt_hash)
+
+admin_bcrypt_hash = bcrypt.generate_password_hash(admin_password)
+admin_user = User(name="admin", phone_number=admin_phonenumber, password_hash=admin_bcrypt_hash)
 db.session.add(admin_user)
 db.session.commit()
 
