@@ -18,7 +18,7 @@ db = SQLAlchemy(app)
 
 from models import *
 
-admin_password = password=os.getenv("ADMIN_PASSWORD")
+admin_password = os.getenv("ADMIN_PASSWORD")
 admin_phonenumber = os.getenv("PHONE_NUMBER")
 csrf_token = os.getenv("CSRF_TOKEN")
 app.config['SECRET_KEY'] = csrf_token
@@ -31,7 +31,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 # add admin user
 
-admin_bcrypt_hash = bcrypt.generate_password_hash(admin_password)
+admin_bcrypt_hash = bcrypt.generate_password_hash(password=admin_password)
 admin_user = User(name="admin", phone_number=admin_phonenumber, password_hash=admin_bcrypt_hash)
 db.session.add(admin_user)
 db.session.commit()
