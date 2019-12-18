@@ -30,5 +30,21 @@ spec:
           limits:
             memory: "500Mi"
             cpu: 1
+        env:
+          - name: CSRF_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: flask-app-secrets
+                key: csrf_token
+          - name: ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: flask-app-secrets
+                key: admin_password
+          - name: PHONE_NUMBER
+            valueFrom:
+              secretKeyRef:
+                name: flask-app-secrets
+                key: phone_number
       restartPolicy: Always
 status: {}
